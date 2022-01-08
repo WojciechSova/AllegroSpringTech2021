@@ -1,0 +1,4 @@
+url:
+  toGetAllRepositories:
+    beforeUsername: https://api.github.com/users/
+    afterUsername: /repos
