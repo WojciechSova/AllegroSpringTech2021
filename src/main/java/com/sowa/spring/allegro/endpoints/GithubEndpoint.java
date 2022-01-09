@@ -36,4 +36,8 @@ public class GithubEndpoint {
         return new ResponseEntity<>(githubService.getSumOfAllStarsInRepositories(githubUsername).toString(), OK);
     }
 
+    @GetMapping(value = "/languages/{githubUsername}", produces = "application/json")
+    public ResponseEntity<?> getLanguages(@PathVariable String githubUsername) {
+        return new ResponseEntity<>(githubService.getLanguagesUsedByUser(githubUsername), OK);
+    }
 }

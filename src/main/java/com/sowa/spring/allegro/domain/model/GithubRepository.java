@@ -16,5 +16,6 @@ public class GithubRepository {
     private String name;
     @JsonProperty("stargazers_count")
     private Integer stars;
-
+    @JsonProperty("languages_url")
+    private String languagesUrl;
 }

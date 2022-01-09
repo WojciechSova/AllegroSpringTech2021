@@ -39,6 +39,54 @@ public class GithubServiceImpl implements GithubService {
         return githubRepositories.stream().mapToInt(GithubRepository::getStars).sum();
     }
 
+    @Override
+    public Map<String, Integer> getLanguagesUsedByUser(String githubUsername) {
+        Map<String, Integer> languages;
+        List<GithubRepository> githubRepositories = getRepositoriesFromGithubByUsername(githubUsername);
+        List<String> languageJsons = new ArrayList<>();
+
+        githubRepositories.forEach(githubRepository ->
+                languageJsons.add(sendRequestAndGetResponseBody(githubRepository.getLanguagesUrl()))
+        );
+
+        if (languageJsons.isEmpty()) {
+            return null;
+        }
+
+        languages = mergeLanguagesJsonsToMap(languageJsons);
+        return sortMapByValuesDesc(languages);
+    }
+
+    private Map<String, Integer> mergeLanguagesJsonsToMap(List<String> languageJsons) {
+        Map<String, Integer> languages = new HashMap<>();
+        languageJsons.forEach(language -> {
+            Map<String, Integer> temp;
+            try {
+                temp = new ObjectMapper().readValue(language, Map.class);
+            } catch (JsonProcessingException e) {
+                logger.error("Error while mapping json to map " + e);
+                throw new RuntimeException(e.getMessage());
+            }
+            temp.forEach((key, value) -> languages.merge(key, value, Integer::sum));
+        });
+        return languages;
+    }
+
+
+    public static <K, V extends Comparable<V> > Map<K, V> sortMapByValuesDesc(final Map<K, V> map)
+    {
+        Comparator<K> valueComparator = (v1, v2) -> {
+            int comp = map.get(v2).compareTo(map.get(v1));
+            if (comp == 0)
+                return 1;
+            else
+                return comp;
+        };
+        Map<K, V> sorted = new TreeMap<>(valueComparator);
+        sorted.putAll(map);
+        return sorted;
+    }
+
     private List<GithubRepository> mapJsonToGithubRepositoryList(String responseBody) {
         ObjectMapper objectMapper = new ObjectMapper();
         List<GithubRepository> githubRepositories;
@@ -63,8 +111,8 @@ public class GithubServiceImpl implements GithubService {
             if (response.isSuccessful()) {
                 return Objects.requireNonNull(response.body()).string();
             }
-            logger.error("Response was not successful: " +  response);
-            throw new RuntimeException(response.message());
+            logger.error("Response was not successful: " +  Objects.requireNonNull(response.body()).string());
+            throw new RuntimeException(Objects.requireNonNull(response.body()).string());
         } catch (IOException e) {
             logger.error("Error while executing request: " +  e);
             throw new RuntimeException(e.getMessage());

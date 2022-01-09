@@ -1,4 +1,4 @@
-# AllegroSpringTech2021
+# AllegroSpringTech2021 - Task 3
 Project for third stage in Allegro Spring Tech e-Xperience 2021
 
 ## How to run application:
@@ -10,7 +10,7 @@ In the project directory type:
 ## How to use application:
 You have two endpoints available:
 
-1. To get all repositories (name and stars) by username:
+1. To get all repositories (name and stars):
 
     `http://localhost:8080/github/repositories/{username}`
 
@@ -19,13 +19,22 @@ You have two endpoints available:
     `curl http://localhost:8080/github/repositories/wojciechsova`
 
 
-2. To get sum of stars in repositories by username:
+2. To get sum of stars in repositories:
    
     `http://localhost:8080/github/stars/{username}`
    
     Curl example: 
    
     `curl http://localhost:8080/github/stars/wojciechsova`
+
+
+3. To get most popular languages used in user repositories:
+
+   `http://localhost:8080/github/languages/{username}`
+
+   Curl example:
+
+   `curl http://localhost:8080/github/languages/wojciechsova`
 
 ## Limits
 Github API have limits for sending requests per hour. 
@@ -34,3 +43,4 @@ Current limits can be found at: https://docs.github.com/en/rest/overview/resourc
 
 ## Future of project:
 - Add proper exception handlers
+- Use multi-threading to send request to get used languages in repositories
